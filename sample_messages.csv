@@ -1,0 +1,21 @@
+message,category,urgency,relevance,time_sensitive,action_required,expected_decision
+"Hi, your technical interview is scheduled for tomorrow at 10 AM. Please confirm your attendance and bring your resume.",career,high,high,true,true,notify
+"Reminder: your board exam Mathematics paper is tomorrow at 9 AM. Bring your admit card.",academic,high,high,true,true,notify
+"URGENT: Your project pull request has a failed build. Please fix immediately before the release.",projects,high,high,true,true,notify
+"Mom: Dinner tonight at 8, please come home on time.",family,medium,high,true,false,digest
+"Reminder: College club meeting is scheduled for Friday at 4 PM.",academic,medium,medium,true,true,digest
+"Meeting scheduled: Sync up call tomorrow at 3 PM to discuss sprint progress.",meeting,medium,medium,true,true,digest
+"FLASH SALE! Buy shoes today and get 50% OFF!!!",promotion,low,low,false,false,mute
+"Your order has been shipped and is out for delivery.",shopping,low,low,false,false,mute
+"John liked your post and commented on it.",social,low,low,false,false,mute
+"URGENT: Your account has been suspended. Click here immediately to verify your identity or lose access.",suspicious,high,low,true,true,digest
+"Congratulations! You have won a lottery prize. Send your bank details to claim your reward.",suspicious,high,low,true,true,digest
+"FYI, the office will be closed next Monday for a public holiday.",general,low,medium,false,false,mute
+"Please submit your assignment by Friday. Late submissions will not be accepted.",academic,medium,high,true,true,digest
+"Your resume has been shortlisted for the internship position. Please reply to schedule an interview.",career,high,high,true,true,notify
+"Grandma is visiting this weekend, let's plan something as a family.",family,low,high,false,false,digest
+"Unsubscribe from this list by clicking below. You have been selected for a free gift.",spam,low,low,false,false,mute
+"Your electricity bill payment is due within 24 hours to avoid disconnection.",general,high,medium,true,true,notify
+"Just a heads up, the gym will have reduced hours this week.",general,low,low,false,false,mute
+"Sprint standup meeting today at 10 AM, please join on Zoom.",meeting,medium,medium,true,true,digest
+"Hey, are we still meeting for coffee this weekend?",personal,low,medium,false,false,digest

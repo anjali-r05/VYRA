@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Action Center · VYRA{% endblock %}
+
+{% block content %}
+<style>
+.ac-page{--ink:#17130f;--muted:#776f68;--soft:#a49b92;--line:rgba(30,22,16,.09);--card:rgba(255,253,249,.94);--orange:#e66f3d;--orange-dark:#c95527;--green:#247a52;--red:#bd4d45;max-width:1480px;margin:0 auto;padding:8px 4px 48px;color:var(--ink)}
+.ac-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;margin-bottom:28px}
+.ac-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:var(--orange-dark);font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.ac-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 5px rgba(230,111,61,.11)}
+.ac-title{margin:0;font-size:clamp(30px,4vw,48px);line-height:1.02;letter-spacing:-.045em;font-weight:800}.ac-subtitle{max-width:700px;margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.65}
+.ac-trust{display:flex;align-items:center;gap:10px;padding:11px 15px;border:1px solid rgba(36,122,82,.14);border-radius:999px;background:rgba(36,122,82,.055);color:var(--green);font-size:12px;font-weight:750;white-space:nowrap}.ac-trust-icon{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:rgba(36,122,82,.1)}
+.ac-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:24px}.ac-stat{min-height:112px;padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 8px 28px rgba(46,31,17,.045)}.ac-stat-label{color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.ac-stat-value{margin-top:12px;font-size:29px;line-height:1;font-weight:800;letter-spacing:-.04em}.ac-stat-note{margin-top:9px;color:var(--soft);font-size:11px}.pending .ac-stat-value{color:var(--orange-dark)}.approved .ac-stat-value{color:var(--green)}.executed .ac-stat-value{color:#4e5f96}.dismissed .ac-stat-value{color:var(--red)}
+.ac-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.ac-filters{display:flex;gap:7px;flex-wrap:wrap}.ac-filter{border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.66);color:var(--muted);padding:9px 14px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.18s}.ac-filter:hover{transform:translateY(-1px);border-color:rgba(230,111,61,.24)}.ac-filter.active{background:var(--ink);border-color:var(--ink);color:#fff}.ac-count{color:var(--soft);font-size:12px;white-space:nowrap}
+.ac-panel{overflow:hidden;border:1px solid var(--line);border-radius:24px;background:var(--card);box-shadow:0 14px 42px rgba(46,31,17,.055)}.ac-panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 21px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.45)}.ac-panel-title{margin:0;font-size:14px;font-weight:800}.ac-panel-description{margin:3px 0 0;color:var(--muted);font-size:11px}
+.ac-list{display:flex;flex-direction:column}.ac-action{padding:21px;border-bottom:1px solid var(--line);transition:background .18s}.ac-action:last-child{border-bottom:0}.ac-action:hover{background:rgba(255,255,255,.48)}.ac-action.hidden{display:none}.ac-grid{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:start}.ac-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:rgba(230,111,61,.09);color:var(--orange-dark)}.ac-main{min-width:0}.ac-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.ac-title-row{margin:0;font-size:15px;line-height:1.4;font-weight:800;letter-spacing:-.015em}.ac-badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.045em}.suggested,.edited{background:rgba(230,111,61,.1);color:var(--orange-dark)}.approved{background:rgba(36,122,82,.09);color:var(--green)}.dismissed{background:rgba(100,91,83,.08);color:#766e67}.executed{background:rgba(78,95,150,.09);color:#4e5f96}
+.ac-type{display:inline-flex;margin-top:11px;padding:6px 9px;border-radius:8px;background:rgba(23,19,15,.045);color:#6c625b;font-size:10px;font-weight:750}.ac-source{display:flex;align-items:center;gap:7px;margin-top:12px;color:var(--soft);font-size:11px}.ac-source-dot{width:5px;height:5px;border-radius:50%;background:#b8afa7}.ac-message{margin-top:8px;color:#625951;font-size:11px;line-height:1.5;max-width:720px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ac-controls{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap;min-width:245px}.ac-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#514942;font:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:.16s}.ac-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(34,24,16,.08)}.ac-btn.approve{border-color:transparent;background:var(--orange);color:#fff}.ac-btn.approve:hover{background:var(--orange-dark)}.ac-btn.edit:hover{border-color:rgba(78,95,150,.2);background:rgba(78,95,150,.05);color:#4e5f96}.ac-btn.dismiss:hover{border-color:rgba(189,77,69,.18);background:rgba(189,77,69,.05);color:var(--red)}.ac-btn.execute{border-color:rgba(36,122,82,.16);background:rgba(36,122,82,.08);color:var(--green)}.ac-btn:disabled{opacity:.52;cursor:not-allowed;transform:none;box-shadow:none}
+.ac-empty{display:none;padding:76px 24px;text-align:center}.ac-empty.visible{display:block}.ac-empty-icon{width:58px;height:58px;display:grid;place-items:center;margin:0 auto 16px;border-radius:18px;background:rgba(230,111,61,.09);color:var(--orange-dark)}.ac-empty-title{margin:0;font-size:18px;font-weight:800}.ac-empty-text{max-width:430px;margin:8px auto 0;color:var(--muted);font-size:13px;line-height:1.6}
+.ac-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(23,19,15,.42);backdrop-filter:blur(7px)}.ac-modal.visible{display:flex}.ac-modal-card{width:min(520px,100%);padding:24px;border:1px solid rgba(30,22,16,.1);border-radius:22px;background:#fffdf9;box-shadow:0 28px 80px rgba(30,22,16,.2)}.ac-modal-title{margin:0;font-size:20px;font-weight:800;letter-spacing:-.025em}.ac-modal-subtitle{margin:7px 0 19px;color:var(--muted);font-size:12px;line-height:1.55}.ac-label{display:block;margin-bottom:7px;color:#5e554e;font-size:11px;font-weight:800}.ac-field{width:100%;min-height:105px;box-sizing:border-box;resize:vertical;padding:12px;border:1px solid rgba(30,22,16,.12);border-radius:12px;outline:none;background:#fff;color:var(--ink);font:inherit;font-size:13px;line-height:1.55}.ac-field:focus{border-color:rgba(230,111,61,.5);box-shadow:0 0 0 4px rgba(230,111,61,.08)}.ac-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.ac-toast{position:fixed;right:22px;bottom:22px;z-index:10000;max-width:360px;padding:13px 16px;border:1px solid rgba(30,22,16,.1);border-radius:13px;background:#211b17;color:#fff;box-shadow:0 16px 42px rgba(0,0,0,.18);font-size:12px;line-height:1.4;opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s}.ac-toast.visible{opacity:1;transform:translateY(0)}.ac-toast.error{background:#8d3935}
+@media(max-width:1100px){.ac-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.ac-grid{grid-template-columns:auto minmax(0,1fr)}.ac-controls{grid-column:2;justify-content:flex-start;min-width:0}}
+@media(max-width:650px){.ac-page{padding-left:0;padding-right:0}.ac-hero{display:block}.ac-trust{margin-top:18px;display:inline-flex}.ac-stats{grid-template-columns:1fr 1fr;gap:9px}.ac-stat{min-height:96px;padding:14px;border-radius:16px}.ac-stat-value{font-size:25px}.ac-toolbar{align-items:flex-start;flex-direction:column}.ac-action{padding:17px 14px}.ac-grid{grid-template-columns:1fr;gap:12px}.ac-icon{width:38px;height:38px}.ac-controls{grid-column:auto;width:100%}.ac-btn{flex:1}.ac-panel{border-radius:18px}}
+</style>
+
+<div class="ac-page">
+  <section class="ac-hero">
+    <div>
+      <div class="ac-eyebrow"><span class="ac-dot"></span>Action Intelligence</div>
+      <h1 class="ac-title">Action Center</h1>
+      <p class="ac-subtitle">VYRA turns important messages into reviewable actions. You stay in control — nothing consequential happens without your approval.</p>
+    </div>
+    <div class="ac-trust"><span class="ac-trust-icon">✓</span><span>Review before execution</span><span id="ac-live-indicator" style="margin-left:4px;opacity:.72">● Live</span></div>
+  </section>
+
+  <section class="ac-stats">
+    <div class="ac-stat"><div class="ac-stat-label">Total actions</div><div class="ac-stat-value" id="ac-total">{{ total_actions }}</div><div class="ac-stat-note">Detected by VYRA</div></div>
+    <div class="ac-stat pending"><div class="ac-stat-label">Needs review</div><div class="ac-stat-value" id="ac-pending">{{ pending_actions }}</div><div class="ac-stat-note">Waiting for your decision</div></div>
+    <div class="ac-stat approved"><div class="ac-stat-label">Approved</div><div class="ac-stat-value" id="ac-approved">{{ approved_actions }}</div><div class="ac-stat-note">Ready for execution</div></div>
+    <div class="ac-stat executed"><div class="ac-stat-label">Executed</div><div class="ac-stat-value" id="ac-executed">{{ executed_actions }}</div><div class="ac-stat-note">Completed locally</div></div>
+    <div class="ac-stat dismissed"><div class="ac-stat-label">Dismissed</div><div class="ac-stat-value" id="ac-dismissed">{{ dismissed_actions }}</div><div class="ac-stat-note">Rejected suggestions</div></div>
+  </section>
+
+  <div class="ac-toolbar">
+    <div class="ac-filters">
+      <button class="ac-filter active" data-filter="all" type="button">All</button>
+      <button class="ac-filter" data-filter="suggested" type="button">Needs review</button>
+      <button class="ac-filter" data-filter="approved" type="button">Approved</button>
+      <button class="ac-filter" data-filter="executed" type="button">Executed</button>
+      <button class="ac-filter" data-filter="dismissed" type="button">Dismissed</button>
+    </div>
+    <div class="ac-count"><span id="ac-visible-count">{{ total_actions }}</span> actions shown</div>
+  </div>
+
+  <section class="ac-panel">
+    <div class="ac-panel-head"><div><h2 class="ac-panel-title">Suggested actions</h2><p class="ac-panel-description">Review VYRA's recommendations before anything is executed.</p></div></div>
+
+    <div class="ac-empty {% if not actions %}visible{% endif %}" id="ac-empty">
+      <div class="ac-empty-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5Z"/><path d="m8 11 2.5 2.5L16 8"/></svg></div>
+      <h3 class="ac-empty-title">No actions here</h3>
+      <p class="ac-empty-text">When VYRA detects an actionable request, it will appear here for your review.</p>
+    </div>
+
+    <div class="ac-list" id="ac-list">
+      {% for action, message in actions %}
+      {% set status = action.status|default('suggested')|lower %}
+      <article class="ac-action" data-status="{{ status }}" data-action-id="{{ action.id }}">
+        <div class="ac-grid">
+          <div class="ac-icon">
+            {% if status == 'executed' %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg>
+            {% elif status == 'dismissed' %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 7 10 10M17 7 7 17"/></svg>
+            {% else %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18"/><path d="M3 12h18"/><path d="M5.5 5.5 18.5 18.5"/><path d="M18.5 5.5 5.5 18.5"/></svg>{% endif %}
+          </div>
+
+          <div class="ac-main">
+            <div class="ac-top"><h3 class="ac-title-row">{{ action.suggestion_text }}</h3><span class="ac-badge {{ status }}" data-role="badge">{% if status == 'suggested' or status == 'edited' %}Needs review{% else %}{{ status|replace('_',' ')|title }}{% endif %}</span></div>
+            {% if action.action_type %}<div class="ac-type">{{ action.action_type|replace('_',' ')|title }}</div>{% endif %}
+            <div class="ac-source"><span class="ac-source-dot"></span>{% if message %}From message #{{ message.id }}{% else %}Generated from VYRA analysis{% endif %}</div>
+            {% if message %}<div class="ac-message" title="{{ message.content|e }}">{{ message.content }}</div>{% endif %}
+          </div>
+
+          <div class="ac-controls">
+            {% if status in ['suggested','edited'] %}
+              <button class="ac-btn approve" type="button" data-action="approve" data-id="{{ action.id }}"><span>✓</span>Approve</button>
+              <button class="ac-btn edit" type="button" data-action="edit" data-id="{{ action.id }}"><span>✎</span>Edit</button>
+              <button class="ac-btn dismiss" type="button" data-action="dismiss" data-id="{{ action.id }}"><span>×</span>Dismiss</button>
+            {% elif status == 'approved' %}
+              <button class="ac-btn execute" type="button" data-action="execute" data-id="{{ action.id }}"><span>▶</span>Execute</button>
+              <button class="ac-btn dismiss" type="button" data-action="dismiss" data-id="{{ action.id }}"><span>×</span>Dismiss</button>
+              <button class="ac-btn edit" type="button" data-action="reopen" data-id="{{ action.id }}">↩ Review again</button>
+            {% elif status == 'executed' %}
+              <button class="ac-btn" type="button" disabled><span>✓</span>Completed</button>
+            {% elif status == 'dismissed' %}
+              <button class="ac-btn edit" type="button" data-action="reopen" data-id="{{ action.id }}">↩ Reopen</button>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<div class="ac-modal" id="ac-edit-modal"><div class="ac-modal-card"><h2 class="ac-modal-title">Edit action</h2><p class="ac-modal-subtitle">Adjust VYRA's suggested action before approving it.</p><label class="ac-label" for="ac-edit-text">Action suggestion</label><textarea id="ac-edit-text" class="ac-field" placeholder="Enter the revised action..."></textarea><div class="ac-modal-actions"><button class="ac-btn" type="button" id="ac-cancel-edit">Cancel</button><button class="ac-btn approve" type="button" id="ac-save-edit">Save changes</button></div></div></div>
+<div class="ac-toast" id="ac-toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  const list=document.getElementById("ac-list"), empty=document.getElementById("ac-empty"), count=document.getElementById("ac-visible-count"), modal=document.getElementById("ac-edit-modal"), editText=document.getElementById("ac-edit-text"), toast=document.getElementById("ac-toast");
+  let filter="all", editingId=null, toastTimer=null;
+  const labels={suggested:"Needs review",edited:"Needs review",approved:"Approved",dismissed:"Dismissed",executed:"Executed"};
+  function items(){return Array.from(document.querySelectorAll(".ac-action"));}
+  function showToast(msg,error){toast.textContent=msg;toast.classList.toggle("error",!!error);toast.classList.add("visible");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("visible"),2800);}
+  function stats(){let p=0,a=0,e=0,d=0;items().forEach(x=>{const s=x.dataset.status;if(s==="suggested"||s==="edited")p++;if(s==="approved")a++;if(s==="executed")e++;if(s==="dismissed")d++;});document.getElementById("ac-total").textContent=items().length;document.getElementById("ac-pending").textContent=p;document.getElementById("ac-approved").textContent=a;document.getElementById("ac-executed").textContent=e;document.getElementById("ac-dismissed").textContent=d;}
+  function matches(s){return filter==="all"||(filter==="suggested"?(s==="suggested"||s==="edited"):s===filter);}
+  function refresh(){let shown=0;items().forEach(x=>{const yes=matches(x.dataset.status);x.classList.toggle("hidden",!yes);if(yes)shown++;});count.textContent=shown;empty.classList.toggle("visible",shown===0);stats();}
+  function setStatus(item,status){item.dataset.status=status;const b=item.querySelector('[data-role="badge"]');if(b){b.className="ac-badge "+status;b.textContent=labels[status]||status.replace(/_/g," ");}}
+  async function post(url,payload){const opt={method:"POST",headers:{"Content-Type":"application/json"}};if(payload)opt.body=JSON.stringify(payload);const r=await fetch(url,opt);let data={};try{data=await r.json();}catch(e){}if(!r.ok)throw new Error(data.error||data.message||"Action could not be completed.");return data;}
+  function controls(item,status){const id=item.dataset.actionId,c=item.querySelector(".ac-controls");if(!c)return;if(status==="executed"){c.innerHTML='<button class="ac-btn" type="button" disabled><span>✓</span>Completed</button>';return;}if(status==="dismissed"){c.innerHTML='<button class="ac-btn edit" type="button" data-action="reopen" data-id="'+id+'">↩ Reopen</button>';return;}if(status==="approved"){c.innerHTML='<button class="ac-btn execute" type="button" data-action="execute" data-id="'+id+'"><span>▶</span>Execute</button><button class="ac-btn dismiss" type="button" data-action="dismiss" data-id="'+id+'"><span>×</span>Dismiss</button><button class="ac-btn edit" type="button" data-action="reopen" data-id="'+id+'">↩ Review again</button>';return;}c.innerHTML='<button class="ac-btn approve" type="button" data-action="approve" data-id="'+id+'"><span>✓</span>Approve</button><button class="ac-btn edit" type="button" data-action="edit" data-id="'+id+'"><span>✎</span>Edit</button><button class="ac-btn dismiss" type="button" data-action="dismiss" data-id="'+id+'"><span>×</span>Dismiss</button>';}
+  async function approve(item){try{await post("/api/actions/"+item.dataset.actionId+"/approve");setStatus(item,"approved");controls(item,"approved");refresh();showToast("Action approved. It is ready for execution.");}catch(e){showToast(e.message,true);}}
+  async function dismiss(item){try{await post("/api/actions/"+item.dataset.actionId+"/dismiss");setStatus(item,"dismissed");controls(item,"dismissed");refresh();showToast("Action dismissed.");}catch(e){showToast(e.message,true);}}
+  async function execute(item){try{await post("/api/actions/"+item.dataset.actionId+"/execute");setStatus(item,"executed");controls(item,"executed");refresh();showToast("Action executed successfully.");}catch(e){showToast(e.message,true);}}
+  async function reopen(item){try{await post("/api/actions/"+item.dataset.actionId+"/reopen");setStatus(item,"suggested");controls(item,"suggested");refresh();showToast("Action returned to review.");}catch(e){showToast(e.message,true);}}
+  function openEdit(item){editingId=item.dataset.actionId;const t=item.querySelector(".ac-title-row");editText.value=t?t.textContent.trim():"";modal.classList.add("visible");setTimeout(()=>editText.focus(),30);}
+  function closeEdit(){modal.classList.remove("visible");editingId=null;editText.value="";}
+  async function saveEdit(){if(!editingId)return;const text=editText.value.trim();if(!text){showToast("Please enter an action suggestion.",true);return;}try{await post("/api/actions/"+editingId+"/edit",{suggestion_text:text});const item=document.querySelector('.ac-action[data-action-id="'+editingId+'"]');if(item){const t=item.querySelector(".ac-title-row");if(t)t.textContent=text;setStatus(item,"edited");controls(item,"edited");}closeEdit();refresh();showToast("Action updated. Review it before approval.");}catch(e){showToast(e.message,true);}}
+  document.querySelectorAll(".ac-filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".ac-filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");filter=b.dataset.filter||"all";refresh();}));
+  list.addEventListener("click",e=>{const b=e.target.closest("[data-action]");if(!b)return;const item=b.closest(".ac-action");if(!item)return;const a=b.dataset.action;if(a==="approve")approve(item);else if(a==="dismiss")dismiss(item);else if(a==="execute")execute(item);else if(a==="edit")openEdit(item);else if(a==="reopen")reopen(item);});
+  document.getElementById("ac-cancel-edit").addEventListener("click",closeEdit);document.getElementById("ac-save-edit").addEventListener("click",saveEdit);modal.addEventListener("click",e=>{if(e.target===modal)closeEdit();});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeEdit();});refresh();
+  let liveFingerprint="";
+  async function syncLive(){try{const r=await fetch("/api/actions",{cache:"no-store"});if(!r.ok)return;const data=await r.json();const live=document.getElementById("ac-live-indicator");if(live){live.textContent="● Live · "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});}const fingerprint=data.map(x=>x.id+":"+x.status+":"+(x.updated_at||"")).join("|");if(liveFingerprint && fingerprint!==liveFingerprint){window.location.reload();return;}liveFingerprint=fingerprint;}catch(e){/* transient network errors are harmless */}}
+  setInterval(syncLive,4000);
+})();
+</script>
+{% endblock %}

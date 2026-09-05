@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Attention DNA{% endblock %}
+{% block content %}
+<style>
+.dna-shell{--ink:#211c18;--muted:#7d7167;--line:rgba(42,32,25,.09);--soft:#faf7f2;--orange:#d86e2b;--gold:#f0a24e;display:grid;gap:18px;padding-bottom:34px}
+.dna-hero{position:relative;overflow:hidden;border:1px solid rgba(186,105,38,.15);border-radius:30px;padding:30px 32px;background:radial-gradient(circle at 85% 15%,rgba(242,164,83,.24),transparent 32%),linear-gradient(135deg,#fffdf9 0%,#fff3e2 100%);box-shadow:0 24px 70px rgba(74,45,23,.09)}
+.dna-hero:after{content:"";position:absolute;width:220px;height:220px;border:1px solid rgba(216,110,43,.12);border-radius:50%;right:-70px;bottom:-130px;box-shadow:0 0 0 28px rgba(216,110,43,.035),0 0 0 58px rgba(216,110,43,.02)}
+.dna-kicker{display:inline-flex;align-items:center;gap:8px;color:#a55b22;font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.dna-kicker i{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 5px rgba(216,110,43,.11)}
+.dna-hero h1{position:relative;z-index:1;margin:9px 0 7px;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.055em;color:var(--ink)}.dna-hero p{position:relative;z-index:1;max-width:760px;margin:0;color:var(--muted);line-height:1.65;font-size:.9rem}.dna-hero-foot{position:relative;z-index:1;display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.dna-pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(42,32,25,.08);font-size:.67rem;font-weight:800;color:#6e6259;backdrop-filter:blur(8px)}
+.dna-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.dna-stat{position:relative;overflow:hidden;padding:18px;border-radius:20px;background:#fff;border:1px solid var(--line);box-shadow:0 12px 35px rgba(42,32,25,.055)}.dna-stat:before{content:"";position:absolute;left:0;top:0;width:42%;height:3px;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:99px}.dna-stat span{display:block;color:#8b7f75;font-size:.67rem;font-weight:700}.dna-stat strong{display:block;margin-top:8px;color:var(--ink);font-size:1.75rem;letter-spacing:-.05em}.dna-stat small{display:block;margin-top:5px;color:#9a8e84;font-size:.62rem}
+.dna-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.dna-card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:24px;box-shadow:0 16px 48px rgba(42,32,25,.055);padding:22px}.dna-card-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:18px}.dna-card h3{margin:0;color:var(--ink);font-size:1rem;letter-spacing:-.02em}.dna-sub{margin:5px 0 0;color:#91847a;font-size:.72rem;line-height:1.5}.dna-head-badge{white-space:nowrap;padding:6px 9px;border-radius:999px;background:#fff6e9;color:#a55b22;border:1px solid #f1dcc4;font-size:.61rem;font-weight:850}
+.dna-bars{display:grid;gap:13px}.dna-bar-row{display:grid;grid-template-columns:105px 1fr 48px;gap:11px;align-items:center}.dna-cat{text-transform:capitalize;color:#54483f;font-size:.74rem;font-weight:800}.dna-track{height:11px;border-radius:999px;background:#f1ece6;overflow:hidden;box-shadow:inset 0 1px 2px rgba(30,20,10,.05)}.dna-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#f2ad5d,#d86e2b);box-shadow:0 4px 10px rgba(216,110,43,.16)}.dna-fill.negative{background:linear-gradient(90deg,#b9b2aa,#746c64);box-shadow:none}.dna-value{text-align:right;color:#3b3028;font-size:.72rem;font-weight:900}
+.dna-profile{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.dna-profile-tile{padding:13px;border-radius:16px;background:#fbf9f6;border:1px solid rgba(42,32,25,.06)}.dna-profile-tile span{display:block;font-size:.61rem;color:#978a80}.dna-profile-tile strong{display:block;margin-top:4px;font-size:.78rem;color:#4a3d34}
+.calibration{display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;min-height:180px}.donut{width:150px;height:150px;border-radius:50%;background:conic-gradient(#d86e2b 0 var(--correct),#ebe6e0 var(--correct) 100%);position:relative;box-shadow:0 12px 28px rgba(216,110,43,.12)}.donut:before{content:"";position:absolute;inset:12px;border-radius:50%;background:linear-gradient(145deg,#fff,#faf7f3);box-shadow:inset 0 0 0 1px rgba(42,32,25,.05)}.donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:1}.donut-center strong{font-size:1.7rem;letter-spacing:-.05em;color:var(--ink)}.donut-center span{font-size:.61rem;color:#93867c;font-weight:750;text-transform:uppercase;letter-spacing:.08em}.legend{display:grid;gap:10px}.legend-row{display:flex;align-items:center;gap:8px;color:#6f6258;font-size:.73rem}.legend-row strong{margin-left:auto;color:#312720}.legend-dot{width:9px;height:9px;border-radius:50%;background:#d86e2b}.legend-dot.muted{background:#d5d0ca}.calibration-note{margin-top:8px;padding:10px 11px;border-radius:12px;background:#fff8ee;color:#8d6c4f;font-size:.62rem;line-height:1.45}
+.signal-card{padding:22px}.signal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.signal{padding:14px;border:1px solid rgba(42,32,25,.06);background:#fbf9f6;border-radius:17px}.signal-top{display:flex;justify-content:space-between;gap:8px;font-size:.66rem;color:#81746a}.signal-top strong{color:#40342c}.signal-track{height:7px;margin-top:12px;border-radius:99px;background:#eee9e3;overflow:hidden}.signal-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#f0a24e,#d86e2b)}
+.dna-explain{display:grid;grid-template-columns:1fr 1fr;gap:12px}.reason-card{padding:18px 19px;position:relative;overflow:hidden}.reason-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#f0a24e,#d86e2b)}.reason-title{font-weight:900;text-transform:capitalize;color:#3d3028;margin-bottom:7px}.reasons-list{margin:0;padding-left:18px;color:#75685e;font-size:.72rem;line-height:1.55}.dna-empty{padding:25px;border-radius:17px;background:#faf8f5;color:#81746a;font-size:.78rem;border:1px dashed rgba(42,32,25,.12)}
+@media(max-width:900px){.dna-grid,.dna-explain{grid-template-columns:1fr}.signal-grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.dna-stat-grid{grid-template-columns:1fr 1fr}.calibration{grid-template-columns:1fr}.donut{margin:auto}.dna-profile{grid-template-columns:1fr}.dna-bar-row{grid-template-columns:82px 1fr 38px}}@media(max-width:430px){.dna-stat-grid,.signal-grid{grid-template-columns:1fr}.dna-hero{padding:24px 21px}.dna-card{padding:18px}}
+</style>
+<div class="dna-shell">
+  <section class="dna-hero">
+    <div class="dna-kicker"><i></i>Personal attention intelligence</div>
+    <h1>Your Attention DNA</h1>
+    <p>VYRA continuously shapes your attention model from real feedback, decisions and workflow behavior — making every future recommendation more personal and explainable.</p>
+    <div class="dna-hero-foot"><span class="dna-pill">Live workspace signals</span><span class="dna-pill">Explainable personalization</span><span class="dna-pill">No black-box preference score</span></div>
+  </section>
+
+  <div class="dna-stat-grid">
+    <div class="dna-stat"><span>Feedback signals</span><strong>{{ total_feedback_count }}</strong><small>Human corrections captured</small></div>
+    <div class="dna-stat"><span>Categories learned</span><strong>{{ learned_profile|length }}</strong><small>Preference dimensions</small></div>
+    <div class="dna-stat"><span>Tasks extracted</span><strong>{{ v3.tasks_total if v3 else 0 }}</strong><small>Workflow commitments</small></div>
+    <div class="dna-stat"><span>Safety flags</span><strong>{{ v3.suspicious_count if v3 else 0 }}</strong><small>Signals needing caution</small></div>
+  </div>
+
+  <div class="dna-grid">
+    <section class="dna-card">
+      <div class="dna-card-head"><div><h3>Preference fingerprint</h3><div class="dna-sub">How strongly your feedback has shifted VYRA's category weighting.</div></div><span class="dna-head-badge">LIVE MODEL</span></div>
+      {% if learned_profile %}
+      <div class="dna-bars">
+        {% for row in learned_profile %}<div class="dna-bar-row"><span class="dna-cat">{{ row.category }}</span><div class="dna-track"><div class="dna-fill {{ 'negative' if row.adjustment < 0 else '' }}" style="width:{{ row.bar_percent }}%"></div></div><span class="dna-value">{{ '+' if row.adjustment > 0 }}{{ row.adjustment }}</span></div>{% endfor %}
+      </div>
+      <div class="dna-profile"><div class="dna-profile-tile"><span>Signal strength</span><strong>{{ learned_profile|length }} learned categories</strong></div><div class="dna-profile-tile"><span>Adjustment direction</span><strong>Positive = prioritize · Negative = reduce</strong></div></div>
+      {% else %}<div class="dna-empty">No learned preference exists yet. Give feedback on Analyze and this fingerprint will evolve from real signals.</div>{% endif %}
+    </section>
+
+    {% set correct_count = feedback_correct|default(0) %}{% set wrong_count = feedback_wrong|default(0) %}{% set feedback_total = correct_count + wrong_count %}{% set correct_pct = ((correct_count / feedback_total * 100) if feedback_total else 0) %}
+    <section class="dna-card">
+      <div class="dna-card-head"><div><h3>Calibration quality</h3><div class="dna-sub">How often your feedback confirms VYRA's current decision.</div></div><span class="dna-head-badge">{{ feedback_total }} SIGNALS</span></div>
+      <div class="calibration"><div class="donut" style="--correct:{{ correct_pct }}%"><div class="donut-center"><strong>{{ correct_pct|round(0)|int }}%</strong><span>aligned</span></div></div><div class="legend"><div class="legend-row"><i class="legend-dot"></i> Correct <strong>{{ correct_count }}</strong></div><div class="legend-row"><i class="legend-dot muted"></i> Wrong <strong>{{ wrong_count }}</strong></div><div class="calibration-note">Your corrections are not just feedback — they become signals for future attention decisions.</div></div></div>
+    </section>
+  </div>
+
+  <section class="dna-card signal-card">
+    <div class="dna-card-head"><div><h3>Behavior signal matrix</h3><div class="dna-sub">Live workflow signals that influence the attention experience.</div></div><span class="dna-head-badge">REAL DATA</span></div>
+    {% if v3 %}<div class="signal-grid">
+      <div class="signal"><div class="signal-top"><span>Tasks pending</span><strong>{{ v3.tasks_pending }}</strong></div><div class="signal-track"><div class="signal-fill" style="width:{{ ((v3.tasks_pending / v3.tasks_total * 100) if v3.tasks_total else 0) }}%"></div></div></div>
+      <div class="signal"><div class="signal-top"><span>Actions approved</span><strong>{{ v3.actions_approved }}</strong></div><div class="signal-track"><div class="signal-fill" style="width:{{ ((v3.actions_approved / v3.actions_total * 100) if v3.actions_total else 0) }}%"></div></div></div>
+      <div class="signal"><div class="signal-top"><span>Actions dismissed</span><strong>{{ v3.actions_dismissed }}</strong></div><div class="signal-track"><div class="signal-fill" style="width:{{ ((v3.actions_dismissed / v3.actions_total * 100) if v3.actions_total else 0) }}%"></div></div></div>
+      <div class="signal"><div class="signal-top"><span>Predictive signals</span><strong>{{ v3.predictive_count_recent }}</strong></div><div class="signal-track"><div class="signal-fill" style="width:{{ ((v3.predictive_count_recent / v3.predictive_window_size * 100) if v3.predictive_window_size else 0) }}%"></div></div></div>
+    </div>{% else %}<div class="dna-empty">Behavior analytics are unavailable right now.</div>{% endif %}
+  </section>
+
+  <section>
+    <div class="section-title">Why VYRA adjusted your DNA</div>
+    {% if learned_profile %}<div class="dna-explain">{% for row in learned_profile %}<div class="dna-card reason-card"><div class="reason-title">{{ row.category }}</div><ul class="reasons-list">{% for reason in row.reasons %}<li>{{ reason }}</li>{% endfor %}</ul></div>{% endfor %}</div>{% else %}<div class="dna-empty">Nothing to explain yet — real feedback is needed before VYRA learns a category preference.</div>{% endif %}
+  </section>
+
+  <section class="dna-card"><div class="dna-card-head" style="margin-bottom:0"><div><h3>Attention baseline</h3><div class="dna-sub">Your Settings preferences are combined with learned adjustments, relevance, urgency, deadlines, action requirements and safety signals for every message.</div></div><span class="dna-head-badge">EXPLAINABLE</span></div></section>
+</div>
+{% endblock %}

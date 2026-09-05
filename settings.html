@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+{% set category_icons = {
+  'career': '💼', 'academic': '🎓', 'projects': '🛠️', 'family': '👪',
+  'personal': '🙂', 'meeting': '📅', 'promotion': '🏷️', 'shopping': '🛍️',
+  'social': '💬', 'spam': '🚫', 'suspicious': '⚠️', 'reminder': '⏰', 'general': '📩'
+} %}
+<div class="page-header">
+  <h1>Settings</h1>
+  <p>Tell VYRA what categories matter most to you.</p>
+</div>
+
+{% if saved %}
+<div class="badge-saved">✓ Preferences saved</div>
+{% endif %}
+
+<div class="card">
+  <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 8px;">
+    These preferences directly influence VYRA's relevance scoring for each category.
+  </p>
+  <form method="POST" action="{{ url_for('update_preferences') }}">
+    {% for category in categories %}
+    <div class="form-row">
+      <span style="text-transform: capitalize;">{{ category_icons.get(category, '📩') }}&nbsp; {{ category }}</span>
+      <select name="pref_{{ category }}">
+        <option value="high" {{ 'selected' if prefs.get(category) == 'high' }}>High priority</option>
+        <option value="normal" {{ 'selected' if prefs.get(category) == 'normal' or not prefs.get(category) }}>Normal</option>
+        <option value="low" {{ 'selected' if prefs.get(category) == 'low' }}>Low priority</option>
+      </select>
+    </div>
+    {% endfor %}
+    <div style="margin-top: 20px; text-align: right;">
+      <button type="submit" class="btn">Save preferences</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

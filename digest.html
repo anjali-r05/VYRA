@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Digest{% endblock %}
+{% block content %}
+{% set category_icons = {
+  'career': '💼', 'academic': '🎓', 'projects': '🛠️', 'family': '👪',
+  'personal': '🙂', 'meeting': '📅', 'promotion': '🏷️', 'shopping': '🛍️',
+  'social': '💬', 'spam': '🚫', 'suspicious': '⚠️', 'reminder': '⏰', 'general': '📩'
+} %}
+<div class="page-header">
+  <h1>Digest</h1>
+  <p>Your communication, organized by how much it deserves your attention.</p>
+</div>
+
+<div class="section-title">🔴 Needs Attention</div>
+<div class="card">
+{% if needs_attention %}
+  {% for message, decision in needs_attention %}
+  <div class="decision-row">
+    <div class="decision-row-icon">{{ category_icons.get(message.category, '📩') }}</div>
+    <div class="decision-row-main">
+      <div class="decision-row-title">{{ message.to_preview(80) }}</div>
+      <div class="decision-row-sub">{{ message.category }} · {{ message.created_at.strftime('%b %d, %H:%M') }}</div>
+    </div>
+    <span class="decision-row-badge decision-notify">notify</span>
+    <div class="decision-row-score">{{ decision.attention_score }}/100</div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty-state">Nothing urgent right now.</div>
+{% endif %}
+</div>
+
+<div class="section-title">🟡 Worth Knowing</div>
+<div class="card">
+{% if worth_knowing %}
+  {% for message, decision in worth_knowing %}
+  <div class="decision-row">
+    <div class="decision-row-icon">{{ category_icons.get(message.category, '📩') }}</div>
+    <div class="decision-row-main">
+      <div class="decision-row-title">{{ message.to_preview(80) }}</div>
+      <div class="decision-row-sub">{{ message.category }} · {{ message.created_at.strftime('%b %d, %H:%M') }}</div>
+    </div>
+    <span class="decision-row-badge decision-digest">digest</span>
+    <div class="decision-row-score">{{ decision.attention_score }}/100</div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty-state">Nothing here yet.</div>
+{% endif %}
+</div>
+
+<div class="section-title">⚪ Filtered</div>
+<div class="card">
+{% if filtered %}
+  {% for message, decision in filtered %}
+  <div class="decision-row">
+    <div class="decision-row-icon">{{ category_icons.get(message.category, '📩') }}</div>
+    <div class="decision-row-main">
+      <div class="decision-row-title">{{ message.to_preview(80) }}</div>
+      <div class="decision-row-sub">{{ message.category }} · {{ message.created_at.strftime('%b %d, %H:%M') }}</div>
+    </div>
+    <span class="decision-row-badge decision-mute">mute</span>
+    <div class="decision-row-score">{{ decision.attention_score }}/100</div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty-state">Nothing filtered yet.</div>
+{% endif %}
+</div>
+{% endblock %}

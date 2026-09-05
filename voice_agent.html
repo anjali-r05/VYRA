@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}Voice Agent{% endblock %}
+{% block content %}
+<style>
+.voice-page{max-width:1180px;margin:0 auto;padding:18px 0 48px}
+.voice-hero{position:relative;overflow:hidden;border:1px solid rgba(228,122,28,.22);border-radius:30px;padding:34px;background:linear-gradient(135deg,#fff9f1 0%,#fff1df 48%,#ffe4c4 100%);box-shadow:0 22px 60px rgba(94,52,21,.10)}
+.voice-hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-90px;top:-130px;background:rgba(224,111,20,.14);filter:blur(4px)}
+.voice-kicker{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid rgba(211,103,17,.18);font-size:12px;font-weight:800;letter-spacing:.08em;color:#a64d08;text-transform:uppercase}
+.voice-title{font-size:clamp(32px,5vw,58px);line-height:1.02;margin:18px 0 12px;letter-spacing:-.045em;color:#29231f;max-width:760px}
+.voice-sub{font-size:16px;line-height:1.65;color:#65584f;max-width:700px;margin:0}
+.voice-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:18px;margin-top:18px}
+.voice-card{background:#fffdf9;border:1px solid #eadfd3;border-radius:24px;box-shadow:0 16px 40px rgba(74,45,25,.07)}
+.voice-console{padding:28px;text-align:center;min-height:500px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.voice-orb{width:178px;height:178px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#fff,#ffd7a9 48%,#f28a28 100%);box-shadow:0 0 0 12px rgba(237,127,27,.08),0 24px 55px rgba(220,105,12,.24);cursor:pointer;border:0;transition:.22s transform,.22s box-shadow}
+.voice-orb:hover{transform:translateY(-3px);box-shadow:0 0 0 16px rgba(237,127,27,.09),0 28px 65px rgba(220,105,12,.28)}
+.voice-orb.listening{animation:voicePulse 1.45s infinite}
+.voice-orb svg{width:54px;height:54px;color:#8f4106}
+@keyframes voicePulse{50%{transform:scale(1.055);box-shadow:0 0 0 26px rgba(237,127,27,.06),0 30px 70px rgba(220,105,12,.30)}}
+.voice-state{margin:20px 0 5px;font-weight:850;color:#302822;font-size:18px}.voice-hint{color:#8a7a6d;font-size:13px}
+.voice-transcript{width:100%;margin-top:22px;padding:16px;border-radius:17px;background:#fff7ed;border:1px solid #f0dcc5;text-align:left;color:#5b4c40;min-height:54px}
+.voice-answer{width:100%;margin-top:10px;padding:17px;border-radius:17px;background:#fff;border:1px solid #e8ded5;text-align:left;color:#2f2823;line-height:1.6;display:none}
+.voice-answer.show{display:block}.voice-side{padding:24px}.side-title{font-weight:850;font-size:18px;color:#302822;margin-bottom:5px}.side-copy{color:#75685e;font-size:13px;line-height:1.55}
+.command{padding:14px 0;border-bottom:1px solid #eee4db}.command:last-child{border-bottom:0}.command b{color:#a64d08}.command span{display:block;color:#5e5148;font-size:13px;margin-top:3px}
+.voice-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:18px}.voice-btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}.voice-btn.primary{background:#e97616;color:#fff}.voice-btn.secondary{background:#fff2e4;color:#9a4b0b;border:1px solid #f1d4b5}
+.voice-status{margin-top:12px;font-size:12px;color:#8a7a6d}.voice-error{color:#b33a1b}
+@media(max-width:850px){.voice-grid{grid-template-columns:1fr}.voice-hero{padding:26px 22px}.voice-console{min-height:460px}}
+</style>
+
+<style>
+.voice-page{max-width:1180px;margin:0 auto;padding:18px 0 52px;color:#302822}.voice-hero{position:relative;overflow:hidden;border:1px solid rgba(228,122,28,.22);border-radius:30px;padding:34px;background:linear-gradient(135deg,#fffaf4,#fff0dc 55%,#ffe1bf);box-shadow:0 22px 60px rgba(94,52,21,.10)}.voice-hero:before{content:"";position:absolute;width:380px;height:380px;right:-130px;top:-190px;border-radius:50%;background:rgba(231,113,18,.13);filter:blur(2px)}.hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;position:relative;z-index:1}.voice-kicker{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid rgba(211,103,17,.18);font-size:12px;font-weight:850;letter-spacing:.08em;color:#a64d08;text-transform:uppercase}.voice-kicker span{font-size:9px}.voice-title{font-size:clamp(34px,5vw,58px);line-height:1.02;margin:18px 0 12px;letter-spacing:-.045em;color:#29231f;max-width:760px}.voice-sub{font-size:16px;line-height:1.65;color:#65584f;max-width:760px;margin:0}.live-pill{white-space:nowrap;margin-top:9px;padding:9px 12px;border-radius:999px;background:#fff;border:1px solid #eed9c4;color:#986022;font-size:11px;font-weight:850;letter-spacing:.08em}.live-pill span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#35a65b;margin-right:6px}.voice-grid{display:grid;grid-template-columns:minmax(0,1.24fr) minmax(300px,.76fr);gap:18px;margin-top:18px}.voice-card{background:#fffdf9;border:1px solid #eadfd3;border-radius:24px;box-shadow:0 16px 40px rgba(74,45,25,.07)}.voice-console{padding:24px;min-height:650px;display:flex;flex-direction:column;align-items:center}.console-top{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.console-label{font-size:11px;font-weight:900;letter-spacing:.12em;color:#9a897c}.support-badge{font-size:10px;font-weight:850;letter-spacing:.06em;color:#7c6c60;background:#f8f0e8;border:1px solid #eadfd3;border-radius:999px;padding:7px 9px}.voice-orb{position:relative;width:190px;height:190px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;margin-top:18px}.orb-core{position:relative;z-index:3;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 28%,#fff,#ffd6a4 48%,#ee7d1d);box-shadow:0 0 0 10px rgba(237,127,27,.08),0 25px 60px rgba(220,105,12,.24);transition:.22s transform,.22s box-shadow}.orb-core svg{width:52px;height:52px;color:#8f4106}.voice-orb:hover .orb-core{transform:translateY(-3px);box-shadow:0 0 0 15px rgba(237,127,27,.09),0 30px 70px rgba(220,105,12,.28)}.orb-ring{position:absolute;border-radius:50%;border:1px solid rgba(231,116,22,.18)}.orb-ring-1{inset:9px}.orb-ring-2{inset:0;border-style:dashed;border-color:rgba(231,116,22,.13)}.voice-orb.listening .orb-ring-1{animation:orbitPulse 1.4s infinite}.voice-orb.listening .orb-ring-2{animation:orbitPulse 1.4s .2s infinite}.voice-orb.thinking .orb-core{animation:thinkingPulse 1s infinite}@keyframes orbitPulse{50%{transform:scale(1.07);opacity:.5}}@keyframes thinkingPulse{50%{transform:scale(1.045)}}.voice-state{margin:10px 0 4px;font-weight:900;font-size:19px}.voice-hint{color:#8a7a6d;font-size:12px;text-align:center;max-width:520px;line-height:1.5}.conversation{width:100%;display:grid;gap:9px;margin-top:22px}.bubble{padding:14px 16px;border-radius:17px;text-align:left;line-height:1.58;font-size:14px;min-height:52px}.user-bubble{background:#fff6ec;border:1px solid #f0dcc5;color:#5b4c40}.agent-bubble{background:#fff;border:1px solid #e7ded6;color:#2f2823}.bubble-label{display:block;font-size:9px;font-weight:900;letter-spacing:.12em;color:#a25a19;margin-bottom:5px}.quick-row{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:12px}.quick{border:1px solid #edd8c1;background:#fff8f0;color:#9a4b0b;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer}.quick:hover{background:#fff0df}.typed-row{display:flex;gap:8px;width:100%;margin-top:12px}.typed-row input{min-width:0;flex:1;border:1px solid #e4d9cf;background:#fff;border-radius:12px;padding:12px 13px;color:#302822;outline:none}.typed-row input:focus{border-color:#e98a3b;box-shadow:0 0 0 3px rgba(233,138,59,.10)}.voice-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}.voice-btn{border:0;border-radius:11px;padding:10px 14px;font-weight:850;cursor:pointer}.voice-btn.primary{background:#e97616;color:#fff}.voice-btn.secondary{background:#fff2e4;color:#9a4b0b;border:1px solid #f1d4b5}.voice-btn.ghost{background:#fff;border:1px solid #e6dbd1;color:#6d5d51}.confirm-area{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:13px 14px;border-radius:15px;background:#fff3df;border:1px solid #efcfaa}.confirm-area div{display:flex;flex-direction:column;text-align:left;gap:3px}.confirm-area strong{font-size:13px;color:#8f4307}.confirm-area span{font-size:11px;color:#806e60}.voice-status{min-height:17px;margin-top:10px;font-size:11px;color:#8a7a6d;text-align:center}.voice-error{color:#b33a1b}.voice-side{padding:24px}.side-head{display:flex;justify-content:space-between;gap:15px;margin-bottom:4px}.side-title{font-weight:900;font-size:18px}.side-copy{color:#75685e;font-size:12px;line-height:1.5;margin-top:3px}.spark{width:35px;height:35px;border-radius:11px;background:#fff2e4;color:#d66b12;display:grid;place-items:center}.command{padding:13px 0;border-bottom:1px solid #eee4db;cursor:pointer}.command:last-child{border-bottom:0}.command b{color:#a64d08;font-size:13px}.command span{display:block;color:#5e5148;font-size:11px;line-height:1.45;margin-top:4px}.command:hover b{text-decoration:underline}@media(max-width:900px){.voice-grid{grid-template-columns:1fr}.voice-console{min-height:auto}.voice-side{order:2}}@media(max-width:560px){.voice-page{padding:10px 0 36px}.voice-hero{padding:24px 18px;border-radius:22px}.hero-row{display:block}.live-pill{display:inline-block;margin-top:14px}.voice-title{font-size:36px}.voice-sub{font-size:14px}.voice-console,.voice-side{padding:18px;border-radius:19px}.voice-orb{width:165px;height:165px}.orb-core{width:116px;height:116px}.typed-row{flex-direction:column}.typed-row .voice-btn{width:100%}.confirm-area{align-items:flex-start}.confirm-area .voice-btn{flex:none}}
+</style>
+<div class="voice-page">
+  <section class="voice-hero">
+    <div class="voice-kicker"><span>●</span> VYRA Voice Agent · Live workspace</div>
+    <div class="hero-row">
+      <div>
+        <h1 class="voice-title">Talk to your attention system.</h1>
+        <p class="voice-sub">Ask VYRA what needs your attention, why it matters, what is waiting, or what to do next. Every answer is generated from your current workspace — not a fixed demo response.</p>
+      </div>
+      <div class="live-pill"><span></span> LIVE DATA</div>
+    </div>
+  </section>
+
+  <div class="voice-grid">
+    <section class="voice-card voice-console">
+      <div class="console-top"><span class="console-label">VOICE CONSOLE</span><span id="supportBadge" class="support-badge">Checking browser…</span></div>
+      <button id="voiceOrb" class="voice-orb" aria-label="Start speaking to VYRA">
+        <span class="orb-ring orb-ring-1"></span><span class="orb-ring orb-ring-2"></span>
+        <span class="orb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="12" rx="4"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg></span>
+      </button>
+      <div id="voiceState" class="voice-state">Tap to speak</div>
+      <div class="voice-hint">Speak naturally. VYRA will understand the request, inspect live data, and answer aloud.</div>
+
+      <div class="conversation">
+        <div class="bubble user-bubble"><span class="bubble-label">YOU</span><div id="voiceTranscript">Your words will appear here.</div></div>
+        <div class="bubble agent-bubble"><span class="bubble-label">VYRA</span><div id="voiceAnswer">Ask a question to get a live answer.</div></div>
+      </div>
+
+      <div class="quick-row">
+        <button class="quick" data-command="What needs my attention?">Attention</button>
+        <button class="quick" data-command="Give me my Proactive Brief.">Brief</button>
+        <button class="quick" data-command="What are my pending tasks?">Tasks</button>
+        <button class="quick" data-command="What actions are waiting for approval?">Actions</button>
+        <button class="quick" data-command="Why is this urgent?">Why?</button>
+      </div>
+
+      <div class="typed-row">
+        <input id="voiceTextInput" type="text" autocomplete="off" placeholder="Or type your question here…" aria-label="Type a question for VYRA">
+        <button id="sendText" class="voice-btn primary" type="button">Ask VYRA</button>
+      </div>
+
+      <div id="confirmArea" class="confirm-area" style="display:none">
+        <div><strong id="confirmTitle">Review required</strong><span>VYRA will not change an action until you confirm.</span></div>
+        <button id="confirmVoice" class="voice-btn primary" type="button">Confirm</button>
+      </div>
+
+      <div class="voice-actions">
+        <button id="stopVoice" class="voice-btn secondary" type="button">Stop voice</button>
+        <button id="repeatVoice" class="voice-btn secondary" type="button">Repeat answer</button>
+        <button id="clearVoice" class="voice-btn ghost" type="button">Clear</button>
+      </div>
+      <div id="voiceStatus" class="voice-status"></div>
+    </section>
+
+    <aside class="voice-card voice-side">
+      <div class="side-head"><div><div class="side-title">Ask naturally</div><div class="side-copy">These are examples. The response comes from your signed-in workspace.</div></div><span class="spark">✦</span></div>
+      <div class="command" data-command="What needs my attention?"><b>“What needs my attention?”</b><span>Returns the actual highest-priority analyzed item, score, signals and next move.</span></div>
+      <div class="command" data-command="Give me my Proactive Brief."><b>“Give me my Proactive Brief.”</b><span>Returns the current critical, important, upcoming and safety state.</span></div>
+      <div class="command" data-command="What are my pending tasks?"><b>“What are my pending tasks?”</b><span>Lists real pending Task Center records.</span></div>
+      <div class="command" data-command="What actions are waiting for approval?"><b>“What actions are waiting for approval?”</b><span>Lists real reviewable Action Center records.</span></div>
+      <div class="command" data-command="Why is this urgent?"><b>“Why is this urgent?”</b><span>Explains the selected/highest-attention message using VYRA's stored reasons and signals.</span></div>
+      <div class="command" data-command="Approve action 1."><b>“Approve action 1.”</b><span>Identifies the real action and asks for confirmation before changing state.</span></div>
+      <div class="command" data-command="Dismiss action 2."><b>“Dismiss action 2.”</b><span>Review-first. No automatic execution.</span></div>
+      <div class="command" data-command="Reopen action 1."><b>“Reopen action 1.”</b><span>Returns an eligible reviewed action to the suggested queue.</span></div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const orb = document.getElementById('voiceOrb');
+  const state = document.getElementById('voiceState');
+  const transcript = document.getElementById('voiceTranscript');
+  const answer = document.getElementById('voiceAnswer');
+  const status = document.getElementById('voiceStatus');
+  const stop = document.getElementById('stopVoice');
+  const repeat = document.getElementById('repeatVoice');
+  const clear = document.getElementById('clearVoice');
+  const confirmArea = document.getElementById('confirmArea');
+  const confirmTitle = document.getElementById('confirmTitle');
+  const confirmVoice = document.getElementById('confirmVoice');
+  const input = document.getElementById('voiceTextInput');
+  const sendText = document.getElementById('sendText');
+  const supportBadge = document.getElementById('supportBadge');
+  let recognition = null;
+  let lastAnswer = '';
+  let busy = false;
+  let pendingConfirmation = null;
+
+  const setStatus = (text, error=false) => { status.textContent = text || ''; status.className = 'voice-status' + (error ? ' voice-error' : ''); };
+
+  const speak = (text) => {
+    lastAnswer = text || '';
+    if (!('speechSynthesis' in window) || !text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-IN'; u.rate = 0.96; u.pitch = 1.02; u.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => /^en-IN$/i.test(v.lang)) || voices.find(v => /^en-GB$/i.test(v.lang)) || voices.find(v => /^en-US$/i.test(v.lang));
+    if (preferred) u.voice = preferred;
+    window.speechSynthesis.speak(u);
+  };
+
+  const showAnswer = (text) => { answer.textContent = text || 'No answer returned.'; speak(text || 'No answer returned.'); };
+
+  async function ask(text) {
+    text = (text || '').trim();
+    if (!text || busy) return;
+    transcript.textContent = text;
+    busy = true;
+    setStatus('VYRA is checking your live workspace…');
+    state.textContent = 'Thinking…';
+    orb.classList.add('thinking');
+    try {
+      const res = await fetch('{{ url_for("api_voice_query") }}', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text})});
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
+      if (!res.ok || !data.ok) throw new Error(data.message || data.error || 'Voice request failed.');
+      pendingConfirmation = data.requires_confirmation ? data.confirmation_token : null;
+      confirmArea.style.display = pendingConfirmation ? 'flex' : 'none';
+      if (pendingConfirmation) confirmTitle.textContent = 'Confirm: ' + pendingConfirmation.operation;
+      showAnswer(data.message);
+      setStatus(data.requires_confirmation ? 'Confirmation required — nothing has been changed yet.' : 'Live answer generated from your current workspace.');
+    } catch (e) {
+      showAnswer(e.message || 'I could not complete that request. Please try again.');
+      setStatus(e.message || 'Request failed.', true);
+    } finally {
+      busy = false; state.textContent = 'Tap to speak'; orb.classList.remove('thinking');
+    }
+  }
+
+  async function confirmPending() {
+    if (!pendingConfirmation || busy) return;
+    const token = pendingConfirmation; pendingConfirmation = null;
+    busy = true; setStatus('Applying your confirmed review decision…'); state.textContent = 'Updating…';
+    try {
+      const res = await fetch('{{ url_for("api_voice_confirm") }}', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(token)});
+      let data = {}; try { data = await res.json(); } catch (_) {}
+      if (!res.ok || !data.ok) throw new Error(data.message || data.error || 'Confirmation failed.');
+      showAnswer(data.message); confirmArea.style.display = 'none'; setStatus('Action Center has been updated from the live database.');
+    } catch (e) { showAnswer(e.message); setStatus(e.message, true); }
+    finally { busy = false; state.textContent = 'Tap to speak'; }
+  }
+
+  function setupRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      supportBadge.textContent = 'VOICE INPUT UNAVAILABLE';
+      setStatus('Voice input is not supported in this browser. You can still type below.', true);
+      return null;
+    }
+    supportBadge.textContent = 'VOICE READY';
+    const r = new SR();
+    r.lang = 'en-IN'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 3;
+    r.onstart = () => { orb.classList.add('listening'); state.textContent = 'Listening…'; setStatus('Speak naturally.'); };
+    r.onresult = (event) => {
+      let finalText = ''; let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const s = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += s; else interim += s;
+      }
+      transcript.textContent = finalText || interim || 'Listening…';
+      if (finalText.trim()) {
+        const spoken = finalText.trim();
+        const low = spoken.toLowerCase().replace(/[.!?]+$/g, '').trim();
+        // A confirmation can be spoken naturally after VYRA asks for approval.
+        if (pendingConfirmation && /^(yes|yeah|yep|confirm|do it|go ahead|please do|approve it|dismiss it|reopen it|okay|ok)$/i.test(low)) {
+          confirmPending();
+        } else {
+          ask(spoken);
+        }
+      }
+    };
+    r.onerror = (event) => {
+      orb.classList.remove('listening'); state.textContent = 'Tap to speak';
+      const message = event.error === 'not-allowed' ? 'Microphone permission was blocked. Allow microphone access and try again.' : 'Voice recognition stopped: ' + event.error;
+      setStatus(message, true);
+    };
+    r.onend = () => { orb.classList.remove('listening'); if (!busy) state.textContent = 'Tap to speak'; };
+    return r;
+  }
+
+  orb.addEventListener('click', () => {
+    if (pendingConfirmation) { confirmPending(); return; }
+    if (!recognition) recognition = setupRecognition();
+    if (!recognition) return;
+    try { recognition.start(); } catch (_) { setStatus('Microphone is already active. Finish speaking first.', true); }
+  });
+
+  document.querySelectorAll('[data-command]').forEach(el => el.addEventListener('click', () => ask(el.dataset.command)));
+  sendText.addEventListener('click', () => ask(input.value));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); ask(input.value); } });
+  stop.addEventListener('click', () => { if (recognition) try { recognition.stop(); } catch (_) {} if ('speechSynthesis' in window) window.speechSynthesis.cancel(); orb.classList.remove('listening'); state.textContent = 'Tap to speak'; setStatus('Voice stopped.'); });
+  repeat.addEventListener('click', () => lastAnswer ? speak(lastAnswer) : setStatus('There is no answer to repeat yet.'));
+  clear.addEventListener('click', () => { transcript.textContent = 'Your words will appear here.'; answer.textContent = 'Ask a question to get a live answer.'; input.value = ''; pendingConfirmation = null; confirmArea.style.display = 'none'; setStatus('Console cleared.'); });
+  confirmVoice.addEventListener('click', confirmPending);
+  if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
+})();
+</script>
+{% endblock %}

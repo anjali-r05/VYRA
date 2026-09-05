@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Inbox{% endblock %}
+{% block content %}
+{% set category_icons = {
+  'career': '💼', 'academic': '🎓', 'projects': '🛠️', 'family': '👪',
+  'personal': '🙂', 'meeting': '📅', 'promotion': '🏷️', 'shopping': '🛍️',
+  'social': '💬', 'spam': '🚫', 'suspicious': '⚠️', 'reminder': '⏰', 'general': '📩'
+} %}
+<div class="page-header">
+  <h1>Inbox</h1>
+  <p>Every message VYRA has analyzed, filterable by decision.</p>
+</div>
+
+<div class="filter-tabs">
+  <a href="{{ url_for('inbox', filter='all') }}" class="filter-tab {{ 'active' if filter_type == 'all' }}">All</a>
+  <a href="{{ url_for('inbox', filter='notify') }}" class="filter-tab {{ 'active' if filter_type == 'notify' }}">🔴 Notify</a>
+  <a href="{{ url_for('inbox', filter='digest') }}" class="filter-tab {{ 'active' if filter_type == 'digest' }}">🟡 Digest</a>
+  <a href="{{ url_for('inbox', filter='mute') }}" class="filter-tab {{ 'active' if filter_type == 'mute' }}">⚪ Mute</a>
+</div>
+
+<div class="card">
+{% if results %}
+  {% for message, decision in results %}
+  <div class="decision-row">
+    <div class="decision-row-icon">{{ category_icons.get(message.category, '📩') }}</div>
+    <div class="decision-row-main">
+      <div class="decision-row-title">{{ message.to_preview(80) }}</div>
+      <div class="decision-row-sub">{{ message.category }} · {{ decision.urgency }} urgency</div>
+    </div>
+    <span class="decision-row-badge decision-{{ decision.decision }}">{{ decision.decision }}</span>
+    <div class="decision-row-score">{{ decision.attention_score }}/100</div>
+    <div class="decision-row-time">{{ message.created_at.strftime('%b %d, %H:%M') }}</div>
+  </div>
+
+  {% set v3i = v3_indicators.get(message.id, {}) %}
+  {% if v3i.has_task or v3i.has_action or v3i.thread_title %}
+  <div style="display:flex; gap:8px; flex-wrap:wrap; padding:0 0 12px 46px;">
+    {% if v3i.thread_title %}
+      <span class="meta-chip">🧵 {{ v3i.thread_title }}</span>
+    {% endif %}
+    {% if v3i.has_task %}
+      <span class="meta-chip">✅ Pending task</span>
+    {% endif %}
+    {% if v3i.has_action %}
+      <span class="meta-chip">💡 Action needs review</span>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endfor %}
+{% else %}
+  <div class="empty-state">No messages match this filter yet.</div>
+{% endif %}
+</div>
+{% endblock %}

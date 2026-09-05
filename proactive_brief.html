@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Proactive Brief{% endblock %}
+{% block content %}
+<style>
+.pb2{--ink:#1d1713;--muted:#746961;--line:#eadfd5;--cream:#fffaf4;--peach:#fff0e5;--orange:#e8752b;--saffron:#f2a23a;--charcoal:#27221f;--soft:#f8eee7;max-width:1220px;margin:0 auto;padding:8px 0 56px;color:var(--ink)}
+.pb2 *{box-sizing:border-box}.pb2 button{font:inherit}.pb2-hero{position:relative;overflow:hidden;border:1px solid #efd8c7;border-radius:30px;padding:34px 38px;background:linear-gradient(120deg,#fffaf4 0%,#fff0e5 58%,#ffe3cf 100%);box-shadow:0 18px 50px rgba(95,52,24,.08)}
+.pb2-hero:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-90px;top:-120px;background:radial-gradient(circle,rgba(232,117,43,.22),rgba(242,162,58,.07) 45%,transparent 70%)}
+.pb2-eyebrow{font-size:11px;font-weight:900;letter-spacing:.14em;color:#a95c27;display:flex;gap:8px;align-items:center}.pb2-live-dot{width:8px;height:8px;border-radius:50%;background:#e8752b;box-shadow:0 0 0 5px rgba(232,117,43,.12)}
+.pb2-hero h1{font-size:clamp(38px,5vw,66px);line-height:.98;letter-spacing:-.055em;margin:15px 0 16px;max-width:760px}.pb2-hero h1 span{color:#c85f25}.pb2-hero p{max-width:780px;font-size:15px;line-height:1.65;color:var(--muted);margin:0}.pb2-pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}.pb2-pill{padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid rgba(214,185,165,.7);font-size:12px;font-weight:800;color:#5f5048}
+.pb2-control{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:14px 16px;border-radius:18px;background:var(--charcoal);color:#fff8f2;box-shadow:0 14px 30px rgba(39,34,31,.12)}.pb2-control-main{display:flex;align-items:center;gap:12px}.pb2-control-main b{font-size:14px}.pb2-control-main span{font-size:12px;color:#d8c9c0}.pb2-live-badge{display:inline-flex;align-items:center;gap:7px;color:#ffc47e;font-weight:900;font-size:11px;letter-spacing:.08em;text-transform:uppercase}.pb2-live-badge i{width:7px;height:7px;background:#f2a23a;border-radius:50%;box-shadow:0 0 0 5px rgba(242,162,58,.13)}.pb2-refresh{border:1px solid rgba(255,255,255,.18);background:#fff8f2;color:#2a211c;padding:10px 15px;border-radius:12px;font-weight:900;cursor:pointer}.pb2-refresh:hover{transform:translateY(-1px)}
+.pb2-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}.pb2-metric{background:#fff;border:1px solid var(--line);border-radius:19px;padding:17px;box-shadow:0 10px 28px rgba(70,42,24,.05)}.pb2-metric-top{display:flex;justify-content:space-between;gap:10px;color:#88766b;font-size:10px;font-weight:900;letter-spacing:.11em}.pb2-metric-top strong{font-size:23px;letter-spacing:-.03em;color:#c45d25}.pb2-metric h3{margin:12px 0 4px;font-size:15px}.pb2-metric p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}.pb2-meter{height:7px;background:#f2e8e0;border-radius:99px;overflow:hidden;margin-top:14px}.pb2-meter i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#f2a23a,#e8752b);width:{{ brief.attention_load }}%}
+.pb2-command{display:grid;grid-template-columns:1.1fr 1.6fr .8fr;gap:0;background:linear-gradient(105deg,#fffaf5 0%,#fff2e8 55%,#ffe7d2 100%);color:#211914;border:1px solid #e9cfbc;border-radius:23px;overflow:hidden;margin:14px 0;box-shadow:0 16px 38px rgba(100,55,24,.09)}.pb2-command>div{padding:21px 23px}.pb2-command>div+div{border-left:1px solid #efdccf}.pb2-command-kicker{font-size:10px;letter-spacing:.12em;font-weight:900;color:#a85a27}.pb2-command h2{font-size:20px;margin:7px 0 4px;color:#211914}.pb2-command p{font-size:12px;color:#71635b;margin:0;line-height:1.5}.pb2-next{font-size:18px;font-weight:900;line-height:1.2;color:#2a201b}.pb2-next small{display:block;color:#75675f;font-size:11px;font-weight:600;margin-top:7px;line-height:1.45}.pb2-safe{font-size:11px;color:#75675f;line-height:1.5}.pb2-safe strong{color:#2b211c}
+.pb2-panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;margin-top:14px;box-shadow:0 12px 35px rgba(70,42,24,.05)}.pb2-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:16px}.pb2-kicker{font-size:10px;letter-spacing:.13em;font-weight:900;color:#b56632}.pb2-head h2{font-size:25px;letter-spacing:-.035em;margin:5px 0}.pb2-head p{margin:0;color:var(--muted);font-size:12px}.pb2-proof{background:#fff7ef;border:1px solid #f1d9c6;padding:9px 12px;border-radius:12px;font-size:11px;font-weight:900;color:#9c5528;white-space:nowrap}
+.pb2-focus-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}.pb2-focus-card{border:1px solid #eadfd5;border-radius:19px;padding:18px;background:linear-gradient(145deg,#fff,#fffaf5)}.pb2-focus-card.safety{background:#fff8f3;border-color:#f0c9a9}.pb2-focus-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.pb2-horizon{font-size:10px;font-weight:900;letter-spacing:.1em;padding:7px 9px;border-radius:999px;background:#f4eee9;color:#66564d}.pb2-horizon.critical{background:#fff0e6;color:#b64e1d}.pb2-horizon.safety{background:#ffe8dc;color:#a64118}.pb2-horizon.important{background:#fff5dc;color:#9b6a15}.pb2-horizon.upcoming{background:#edf5ee;color:#4c7857}.pb2-score{font-size:20px;font-weight:950;color:#c45d25}.pb2-focus-card h3{font-size:17px;margin:13px 0 7px;line-height:1.2}.pb2-meta{font-size:11px;color:#8b7970}.pb2-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.pb2-chip{font-size:10px;padding:6px 8px;border-radius:8px;background:#f7f1ec;color:#665950;border:1px solid #eee3da}.pb2-reason{margin-top:14px;padding-top:13px;border-top:1px solid #eee5de}.pb2-reason b{display:block;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#a76438;margin-bottom:6px}.pb2-reason span{display:block;font-size:11px;line-height:1.5;color:#655951;margin-top:3px}.pb2-actions{display:flex;gap:8px;margin-top:14px}.pb2-btn{border:1px solid #e4d8cf;background:white;border-radius:10px;padding:9px 11px;font-size:11px;font-weight:900;cursor:pointer;color:#463a33}.pb2-btn.primary{background:#e8752b;color:white;border-color:#e8752b}.pb2-btn:hover{filter:brightness(.98);transform:translateY(-1px)}
+.pb2-stream-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}.pb2-stream-tools{display:flex;gap:7px;flex-wrap:wrap}.pb2-filter{border:1px solid #e5d9d0;background:#fffaf5;color:#695950;border-radius:999px;padding:8px 11px;font-size:10px;font-weight:900;cursor:pointer}.pb2-filter.active{background:#e8752b;color:#fff;border-color:#e8752b}.pb2-stream{display:flex;flex-direction:column;gap:8px}.pb2-row{display:grid;grid-template-columns:76px 1fr 88px 112px;gap:14px;align-items:center;border:1px solid #eee4dc;border-radius:16px;padding:13px 14px;background:#fff;transition:.15s}.pb2-row:hover{border-color:#e6c7b2;box-shadow:0 7px 18px rgba(72,42,23,.05);transform:translateY(-1px)}.pb2-row-rank{font-size:10px;font-weight:900;color:#a88977;letter-spacing:.08em}.pb2-row-main h3{font-size:13px;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pb2-row-main p{font-size:10px;color:#82736a;margin:0}.pb2-row-score{text-align:right;font-size:18px;font-weight:950;color:#c45d25}.pb2-row-score small{display:block;font-size:9px;font-weight:700;color:#9b8980}.pb2-row-btn{text-align:right}.pb2-empty{text-align:center;padding:45px 20px;border:1px dashed #dfd1c7;border-radius:18px;background:#fffaf5}.pb2-empty strong{display:block;font-size:19px;margin-bottom:5px}.pb2-empty span{font-size:12px;color:var(--muted)}
+.pb2-modal{position:fixed;inset:0;background:rgba(25,19,16,.42);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}.pb2-modal.open{display:flex}.pb2-modal-card{max-width:720px;width:100%;max-height:86vh;overflow:auto;background:#fffaf5;border:1px solid #ead6c6;border-radius:25px;box-shadow:0 30px 90px rgba(30,20,15,.25);padding:24px}.pb2-modal-head{display:flex;justify-content:space-between;gap:15px}.pb2-close{border:0;background:#f1e7df;border-radius:10px;width:36px;height:36px;cursor:pointer;font-weight:900}.pb2-modal h2{font-size:25px;letter-spacing:-.035em;margin:12px 0 8px}.pb2-message{padding:16px;border-radius:15px;background:#fff;border:1px solid #e9ddd4;font-size:13px;line-height:1.65;white-space:pre-wrap}.pb2-trace{margin-top:15px}.pb2-trace b{font-size:10px;letter-spacing:.1em;color:#a45d31;text-transform:uppercase}.pb2-trace ul{margin:7px 0 0;padding-left:20px;color:#62564f;font-size:12px;line-height:1.6}.pb2-modal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}.pb2-mini{background:#f7eee7;border-radius:12px;padding:11px}.pb2-mini small{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#907b70}.pb2-mini strong{font-size:14px;margin-top:3px;display:block}
+@media(max-width:980px){.pb2-metrics{grid-template-columns:1fr 1fr}.pb2-command{grid-template-columns:1fr}.pb2-command>div+div{border-left:0;border-top:1px solid rgba(255,255,255,.1)}.pb2-focus-grid{grid-template-columns:1fr}.pb2-row{grid-template-columns:54px 1fr 70px}.pb2-row-btn{grid-column:2/-1;text-align:left}.pb2-row-score{grid-column:3;grid-row:1;text-align:right}}@media(max-width:650px){.pb2{padding-top:0}.pb2-hero{padding:25px 20px;border-radius:22px}.pb2-hero h1{font-size:39px}.pb2-metrics{grid-template-columns:1fr}.pb2-control{align-items:flex-start;flex-direction:column}.pb2-refresh{width:100%}.pb2-panel{padding:16px;border-radius:19px}.pb2-head{align-items:flex-start;flex-direction:column}.pb2-proof{white-space:normal}.pb2-row{grid-template-columns:45px 1fr}.pb2-row-score{grid-column:2;grid-row:2;text-align:left}.pb2-modal-grid{grid-template-columns:1fr 1fr}}
+</style>
+
+<div class="pb2" data-brief-page>
+  <section class="pb2-hero">
+    <div class="pb2-eyebrow"><i class="pb2-live-dot"></i> VYRA · LIVE ATTENTION DECISION ENGINE</div>
+    <h1>Don't manage your inbox.<br><span>Manage what deserves you.</span></h1>
+    <p>Every message is independently evaluated from your live workspace. VYRA weighs its attention signals, decides its current horizon, explains the decision, and continuously rebuilds the smallest useful focus queue.</p>
+    <div class="pb2-pills"><span class="pb2-pill">Message-by-message decisions</span><span class="pb2-pill">Explainable signal convergence</span><span class="pb2-pill">Predictive look-ahead</span><span class="pb2-pill">Human-controlled actions</span></div>
+  </section>
+
+  <section class="pb2-control">
+    <div class="pb2-control-main"><span class="pb2-live-badge"><i></i> Live workspace</span><b id="pbStatus">Watching your latest analysis</b><span id="pbUpdated">Generated just now</span></div>
+    <button class="pb2-refresh" id="pbRefresh" type="button">↻ Recalculate from Analyze</button>
+  </section>
+
+  <section class="pb2-metrics">
+    <div class="pb2-metric"><div class="pb2-metric-top"><span>ATTENTION LOAD</span><strong>{{ brief.attention_load }}%</strong></div><div class="pb2-meter"><i></i></div><h3>{{ brief.load_label }}</h3><p>Transparent load from active attention horizons.</p></div>
+    <div class="pb2-metric"><div class="pb2-metric-top"><span>MESSAGES EVALUATED</span><strong>{{ brief.message_count }}</strong></div><h3>Each message gets a decision</h3><p>Live rows are read from your logged-in workspace.</p></div>
+    <div class="pb2-metric"><div class="pb2-metric-top"><span>OPEN LOOPS</span><strong>{{ brief.open_loops }}</strong></div><h3>Tasks + action decisions</h3><p>Unresolved work that can pull attention forward.</p></div>
+    <div class="pb2-metric"><div class="pb2-metric-top"><span>SAFETY</span><strong>{{ brief.safety_count }}</strong></div><h3>{% if brief.safety_count %}Review before acting{% else %}No active safety flags{% endif %}</h3><p>Safety signals override ordinary urgency.</p></div>
+  </section>
+
+  <section class="pb2-command">
+    <div><div class="pb2-command-kicker">NEXT-BEST ATTENTION DECISION</div><h2>{{ brief.next_move.label }}</h2><p>{{ brief.next_move.why }}</p></div>
+    <div><div class="pb2-command-kicker">WHAT VYRA WANTS YOU TO SEE</div><div class="pb2-next">{{ brief.next_move.detail }}<small>Recommendation only — VYRA never executes a consequential action from this brief.</small></div></div>
+    <div><div class="pb2-command-kicker">CONTROL</div><div class="pb2-safe"><strong>You decide.</strong><br>Inspect the source message, review the trace, then use Action Center when an action needs approval.</div></div>
+  </section>
+
+  <section class="pb2-panel">
+    <div class="pb2-head"><div><div class="pb2-kicker">FOCUS QUEUE</div><h2>What deserves you next</h2><p>This is the ranked subset — not a dump of your inbox.</p></div><div class="pb2-proof">{{ brief.recommended_focus }}/{{ brief.focus_slots }} focus slots selected</div></div>
+    {% if brief.focus_queue %}
+    <div class="pb2-focus-grid">
+      {% for item in brief.focus_queue[:6] %}
+      <article class="pb2-focus-card {% if item.horizon == 'safety' %}safety{% endif %}">
+        <div class="pb2-focus-top"><span class="pb2-horizon {{ item.horizon }}">{% if item.horizon == 'safety' %}CHECK FIRST{% elif item.horizon == 'critical' %}ACT NOW{% elif item.horizon == 'important' %}HANDLE SOON{% else %}LOOK AHEAD{% endif %}</span><span class="pb2-score">{% if item.score is not none %}{{ item.score|round|int }}{% else %}—{% endif %}</span></div>
+        <h3>{{ item.title }}</h3><div class="pb2-meta">{{ item.subtitle|title }}{% if item.action_count %} · {{ item.action_count }} open action{% if item.action_count != 1 %}s{% endif %}{% endif %}</div>
+        <div class="pb2-chips">{% for signal in item.signals[:5] %}<span class="pb2-chip">{{ signal }}</span>{% endfor %}</div>
+        <div class="pb2-reason"><b>Why it is here</b>{% for reason in item.reasons[:3] %}<span>{{ reason }}</span>{% endfor %}</div>
+        <div class="pb2-actions"><button class="pb2-btn primary inspect-by-id" data-id="{{ item.message_id }}">Inspect decision</button>{% if item.action_count %}<button class="pb2-btn" type="button" onclick="location.href='{{ url_for('action_center') }}'">Review action</button>{% endif %}</div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}<div class="pb2-empty"><strong>Clear runway.</strong><span>VYRA found no active attention horizon above its current thresholds.</span></div>{% endif %}
+  </section>
+
+  <section class="pb2-panel">
+    <div class="pb2-stream-head"><div><div class="pb2-kicker">LIVE DECISION STREAM</div><h2 style="margin:5px 0 3px;font-size:25px;letter-spacing:-.035em">Every message, independently calculated</h2><p style="margin:0;color:var(--muted);font-size:12px">Add a new message in Analyze and it will enter this stream automatically after VYRA saves its decision.</p></div><div class="pb2-stream-tools"><button class="pb2-filter active" data-filter="all">All</button><button class="pb2-filter" data-filter="critical">Act now</button><button class="pb2-filter" data-filter="important">Soon</button><button class="pb2-filter" data-filter="upcoming">Look ahead</button><button class="pb2-filter" data-filter="safety">Safety</button></div></div>
+    <div class="pb2-stream" id="pbStream" style="margin-top:14px">
+      {% for item in brief.message_focus %}
+      <article class="pb2-row" data-horizon="{{ item.horizon }}" data-message-id="{{ item.message_id }}">
+        <div class="pb2-row-rank">#{{ loop.index }}</div>
+        <div class="pb2-row-main"><h3>{{ item.preview }}</h3><p>{{ item.category|title }} · {{ item.horizon_label }}{% if item.deadline %} · Deadline: {{ item.deadline }}{% endif %}</p></div>
+        <div class="pb2-row-score">{{ item.score|round|int }}<small>/100 attention</small></div>
+        <div class="pb2-row-btn"><button class="pb2-btn inspect-by-id" data-id="{{ item.message_id }}">Inspect why →</button></div>
+      </article>
+      {% else %}<div class="pb2-empty"><strong>No analyzed messages yet.</strong><span>Go to Analyze, submit a message, and VYRA will calculate a decision here.</span></div>{% endfor %}
+    </div>
+  </section>
+
+  <section class="pb2-panel">
+    <div class="pb2-head"><div><div class="pb2-kicker">THE DIFFERENCE</div><h2>From inbox summary → attention decision</h2><p>VYRA connects the systems you already built instead of generating another static report.</p></div></div>
+    <div class="pb2-focus-grid">
+      <div class="pb2-focus-card"><div class="pb2-kicker">SIGNAL CONVERGENCE</div><h3>One message can move horizons as its signals change.</h3><p style="font-size:12px;line-height:1.6;color:var(--muted);margin:0">Urgency, relevance, deadlines, action requirements, safety flags, open tasks, open actions and predictive cues are inspected together. A newly analyzed message gets its own persisted decision and immediately enters the live stream.</p></div>
+      <div class="pb2-focus-card"><div class="pb2-kicker">CLOSED-LOOP WORKFLOW</div><h3>See → understand → decide → act under control.</h3><p style="font-size:12px;line-height:1.6;color:var(--muted);margin:0">The Brief recommends. Smart Threads organize context. Task Center surfaces work. Action Center handles approval. The user remains the final decision-maker.</p></div>
+    </div>
+  </section>
+</div>
+
+<div class="pb2-modal" id="pbModal" aria-hidden="true">
+  <div class="pb2-modal-card" role="dialog" aria-modal="true" aria-labelledby="pbModalTitle">
+    <div class="pb2-modal-head"><div><div class="pb2-kicker">LIVE DECISION TRACE</div><h2 id="pbModalTitle">Message decision</h2></div><button class="pb2-close" id="pbClose" type="button">×</button></div>
+    <div class="pb2-modal-grid"><div class="pb2-mini"><small>Attention</small><strong id="mScore">—</strong></div><div class="pb2-mini"><small>Decision</small><strong id="mDecision">—</strong></div><div class="pb2-mini"><small>Horizon</small><strong id="mHorizon">—</strong></div></div>
+    <div class="pb2-message" id="mContent">Loading…</div>
+    <div class="pb2-trace"><b>Why VYRA decided this</b><ul id="mReasons"></ul></div>
+    <div class="pb2-trace"><b>Observed signals</b><div class="pb2-chips" id="mSignals"></div></div>
+    <div class="pb2-actions"><button class="pb2-btn primary" id="mAction" type="button">Open Action Center</button><button class="pb2-btn" id="mClose2" type="button">Done</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = {{ brief.message_focus|tojson }};
+  const modal = document.getElementById('pbModal');
+  const close = () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); };
+  document.getElementById('pbClose').addEventListener('click', close);
+  document.getElementById('mClose2').addEventListener('click', close);
+  modal.addEventListener('click', e => { if(e.target === modal) close(); });
+
+  function inspect(id){
+    const item = data.find(x => String(x.message_id) === String(id));
+    if(!item) return;
+    document.getElementById('pbModalTitle').textContent = item.preview || 'Message decision';
+    document.getElementById('mScore').textContent = Math.round(item.score) + '/100';
+    document.getElementById('mDecision').textContent = (item.decision || '—').toUpperCase();
+    document.getElementById('mHorizon').textContent = item.horizon_label || '—';
+    document.getElementById('mContent').textContent = item.content || item.preview || '';
+    document.getElementById('mReasons').innerHTML = (item.reasons || []).map(x => '<li>'+escapeHtml(x)+'</li>').join('');
+    document.getElementById('mSignals').innerHTML = (item.signals || []).map(x => '<span class="pb2-chip">'+escapeHtml(x)+'</span>').join('') || '<span class="pb2-chip">No additional signal</span>';
+    document.getElementById('mAction').onclick = () => location.href='{{ url_for("action_center") }}';
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+  }
+  function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  document.querySelectorAll('.inspect-by-id').forEach(b => b.addEventListener('click',()=>inspect(b.dataset.id)));
+
+  document.querySelectorAll('.pb2-filter').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.pb2-filter').forEach(x=>x.classList.remove('active')); btn.classList.add('active');
+    const f=btn.dataset.filter;
+    document.querySelectorAll('.pb2-row').forEach(row=>{row.style.display=(f==='all'||row.dataset.horizon===f)?'grid':'none';});
+  }));
+
+  const refreshBtn=document.getElementById('pbRefresh');
+  async function refresh(){
+    refreshBtn.disabled=true; refreshBtn.textContent='↻ Recalculating…';
+    try{const r=await fetch('{{ url_for("proactive_brief_api") }}?t='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error(); await r.json(); location.reload();}
+    catch(e){refreshBtn.disabled=false; refreshBtn.textContent='↻ Recalculate from Analyze'; document.getElementById('pbStatus').textContent='Refresh failed — workspace is still safe';}
+  }
+  refreshBtn.addEventListener('click',refresh);
+
+  let signature=JSON.stringify(data.map(x=>[x.message_id,x.score,x.decision,x.horizon,x.action_count,x.task_count]));
+  async function watch(){
+    try{const r=await fetch('{{ url_for("proactive_brief_api") }}?t='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}}); if(!r.ok)return; const b=await r.json(); const s=JSON.stringify((b.message_focus||[]).map(x=>[x.message_id,x.score,x.decision,x.horizon,x.action_count,x.task_count])); if(s!==signature){document.getElementById('pbStatus').textContent='New workspace decision detected — updating…'; location.reload();}}
+    catch(e){}
+  }
+  setInterval(watch,5000);
+})();
+</script>
+{% endblock %}

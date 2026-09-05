@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}Analyze{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Tell VYRA what needs your attention.</h1>
+  <p>Paste any message below — VYRA will decide what it deserves, right now.</p>
+</div>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="vyra-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#EC4899" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<style>
+.analyze-composer{position:relative}.analyze-input-wrap{position:relative}.analyze-input{padding-right:68px!important;min-height:170px}.voice-input-btn{position:absolute;right:12px;bottom:12px;width:46px;height:46px;border:1px solid rgba(167,91,28,.18);border-radius:15px;background:#fff7ec;color:#a75b1c;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px rgba(120,70,30,.08);transition:.2s}.voice-input-btn:hover{transform:translateY(-1px);background:#fff0dc}.voice-input-btn.listening{background:#d9782c;color:#fff;border-color:#d9782c;box-shadow:0 0 0 7px rgba(217,120,44,.13)}.voice-input-btn svg{width:20px;height:20px}.voice-status{display:flex;align-items:center;gap:8px;min-height:22px;margin-top:9px;font-size:.76rem;color:var(--text-muted)}.voice-dot{width:7px;height:7px;border-radius:50%;background:#d9782c}.analyze-actions{margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px}.analyze-hint{font-size:.75rem;color:var(--text-muted)}@media(max-width:600px){.analyze-input{min-height:150px}.analyze-actions{align-items:stretch;flex-direction:column}.analyze-actions .btn{width:100%}.analyze-hint{order:2}}
+</style>
+<div class="card analyze-composer">
+  <div class="analyze-input-wrap">
+    <textarea id="messageInput" class="analyze-input" placeholder="Paste a message for VYRA to analyze, or tap the microphone and speak..."></textarea>
+    <button id="voiceInputBtn" class="voice-input-btn" type="button" aria-label="Speak message" title="Speak message">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="12" rx="4"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+    </button>
+  </div>
+  <div id="voiceStatus" class="voice-status"><span class="voice-dot" style="display:none"></span><span>Tip: speak naturally — VYRA will place your words into the message box before analyzing.</span></div>
+  <div class="analyze-actions">
+    <span class="analyze-hint">Press Ctrl/Cmd + Enter to analyze</span>
+    <button id="analyzeBtn" class="btn">Analyze Message</button>
+  </div>
+</div>
+
+<div id="resultPanel"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const messageInput = document.getElementById('messageInput');
+const voiceInputBtn = document.getElementById('voiceInputBtn');
+const voiceStatus = document.getElementById('voiceStatus');
+let recognition = null;
+let isListening = false;
+let finalTranscript = '';
+
+if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-IN';
+
+  recognition.onstart = () => {
+    isListening = true;
+    voiceInputBtn.classList.add('listening');
+    voiceStatus.innerHTML = '<span class="voice-dot"></span><span>Listening… speak your message now.</span>';
+  };
+  recognition.onresult = (event) => {
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const piece = event.results[i][0].transcript;
+      if (event.results[i].isFinal) finalTranscript += piece + ' ';
+      else interim += piece;
+    }
+    const existing = messageInput.dataset.voiceBase || '';
+    messageInput.value = (existing + finalTranscript + interim).trim();
+  };
+  recognition.onerror = (event) => {
+    isListening = false;
+    voiceInputBtn.classList.remove('listening');
+    const msg = event.error === 'not-allowed' ? 'Microphone permission was blocked. Allow microphone access and try again.' : 'Voice input stopped. You can type or try the microphone again.';
+    voiceStatus.innerHTML = '<span class="voice-dot"></span><span>' + msg + '</span>';
+    finalTranscript = '';
+    messageInput.dataset.voiceBase = '';
+  };
+  recognition.onend = () => {
+    isListening = false;
+    voiceInputBtn.classList.remove('listening');
+    if (!voiceStatus.textContent.includes('permission')) voiceStatus.innerHTML = '<span class="voice-dot" style="display:none"></span><span>Voice captured. Review the text, then analyze.</span>';
+    messageInput.dataset.voiceBase = '';
+    finalTranscript = '';
+  };
+  voiceInputBtn.addEventListener('click', () => {
+    if (isListening) { recognition.stop(); return; }
+    finalTranscript = '';
+    messageInput.dataset.voiceBase = messageInput.value.trim() ? messageInput.value.trim() + ' ' : '';
+    try { recognition.start(); } catch (e) {}
+  });
+} else {
+  voiceInputBtn.disabled = true;
+  voiceInputBtn.title = 'Voice input is not supported in this browser';
+  voiceStatus.innerHTML = '<span>Voice input is not supported here. Try Chrome or Edge, or type the message.</span>';
+}
+
+document.getElementById('analyzeBtn').addEventListener('click', analyzeMessage);
+document.getElementById('messageInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyzeMessage();
+});
+
+async function analyzeMessage() {
+  const input = document.getElementById('messageInput');
+  const btn = document.getElementById('analyzeBtn');
+  const panel = document.getElementById('resultPanel');
+  const text = input.value.trim();
+
+  if (!text) {
+    panel.innerHTML = '<div class="result-panel"><p style="color: var(--notify);">Please enter a message to analyze.</p></div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Analyzing...';
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      panel.innerHTML = `<div class="result-panel"><p style="color: var(--notify);">${data.error || 'Analysis failed.'}</p></div>`;
+      return;
+    }
+
+    renderResult(data);
+  } catch (err) {
+    panel.innerHTML = '<div class="result-panel"><p style="color: var(--notify);">Something went wrong. Please try again.</p></div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Analyze Message';
+  }
+}
+
+function renderResult(data) {
+  const panel = document.getElementById('resultPanel');
+  const icons = { notify: '🔴', digest: '🟡', mute: '⚪' };
+  const icon = icons[data.decision] || '⚪';
+
+  const reasonsHtml = data.reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('');
+
+  const score = data.attention_score;
+  const circumference = 226.2; // 2 * PI * 36
+  const ringOffset = circumference - (circumference * (score / 100));
+
+  panel.innerHTML = `
+    <div class="result-panel">
+      <div class="result-score-row">
+        <div class="score-ring-wrap" style="width:88px;height:88px;">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle class="score-ring-bg" cx="44" cy="44" r="36" />
+            <circle class="score-ring-fill" cx="44" cy="44" r="36"
+                    stroke-dasharray="${circumference}"
+                    stroke-dashoffset="${ringOffset}" />
+          </svg>
+          <div class="score-ring-value">
+            <div class="score-ring-number" style="font-size:1.3rem;">${score}</div>
+            <div class="score-ring-outof">/100</div>
+          </div>
+        </div>
+        <div>
+          <span class="decision-badge decision-${data.decision}">${icon} ${data.decision}</span>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <span class="meta-chip">Category: ${escapeHtml(data.category)}</span>
+        <span class="meta-chip">Urgency: ${escapeHtml(data.urgency)}</span>
+        <span class="meta-chip">Relevance: ${Math.round(data.relevance)}</span>
+        ${data.deadline ? `<span class="meta-chip">Deadline: ${escapeHtml(data.deadline)}</span>` : ''}
+        <span class="meta-chip">Action required: ${data.action_required ? 'Yes' : 'No'}</span>
+        ${data.suspicious ? '<span class="meta-chip" style="color: var(--notify);">⚠ Suspicious</span>' : ''}
+      </div>
+
+      <ul class="reasons-list">${reasonsHtml}</ul>
+
+      <div class="explanation-box">${escapeHtml(data.explanation)}</div>
+
+      ${data.v2_reasons && data.v2_reasons.length ? `
+      <div class="explanation-box" style="margin-top: 12px;">
+        <strong>Personalization (V2):</strong>
+        V1 scored this ${data.v1_score}/100 (${data.v1_decision}).
+        ${data.v2_adjustment > 0 ? `VYRA added +${data.v2_adjustment} points based on your feedback history.` :
+          data.v2_adjustment < 0 ? `VYRA subtracted ${Math.abs(data.v2_adjustment)} points based on your feedback history.` :
+          `No personalization adjustment was applied.`}
+        Final: <strong>${data.final_score}/100 (${data.final_decision})</strong>.
+        <ul class="reasons-list" style="margin-top: 8px;">${data.v2_reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+      </div>
+      ` : ''}
+
+      ${data.v3_reasons && data.v3_reasons.length ? `
+      <div class="explanation-box" style="margin-top: 12px;">
+        <strong>Adaptive Attention (V3):</strong>
+        ${data.v3_adjustment > 0 ? `VYRA added +${data.v3_adjustment} points based on the message's real deadline and required action.` :
+          `No adaptive adjustment was applied beyond V1/V2.`}
+        Final: <strong>${data.v3_score}/100 (${data.v3_decision})</strong>.
+        <ul class="reasons-list" style="margin-top: 8px;">${data.v3_reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+      </div>
+      ` : ''}
+
+      ${data.prediction && data.prediction.is_predictive ? `
+      <div class="explanation-box" style="margin-top: 12px;">
+        <strong>🔮 Predictive Attention:</strong>
+        This may become more important later (predicted importance: <strong>${escapeHtml(data.prediction.predicted_importance)}</strong>).
+        <ul class="reasons-list" style="margin-top: 8px;">${data.prediction.reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>
+      </div>
+      ` : ''}
+
+      ${data.tasks && data.tasks.length ? `
+      <div class="explanation-box" style="margin-top: 12px;">
+        <strong>✅ Tasks extracted:</strong>
+        <ul class="reasons-list" style="margin-top: 8px;">
+          ${data.tasks.map(t => `<li>${escapeHtml(t.title)}${t.deadline ? ` — deadline: ${escapeHtml(t.deadline)}` : ''} <span class="meta-chip" style="margin-left: 4px;">${escapeHtml(t.priority)} priority</span></li>`).join('')}
+        </ul>
+      </div>
+      ` : ''}
+
+      ${data.thread_title ? `
+      <div class="meta-row" style="margin-top: 12px; margin-bottom: 0;">
+        <span class="meta-chip">🧵 Thread: ${escapeHtml(data.thread_title)}</span>
+      </div>
+      ` : ''}
+
+      ${data.action_ids && data.action_ids.length ? `
+      <div class="explanation-box" style="margin-top: 12px;">
+        <strong>💡 Suggested actions (${data.action_ids.length}):</strong>
+        <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px;">
+          VYRA has suggested ${data.action_ids.length} next step${data.action_ids.length !== 1 ? 's' : ''} for this message.
+          Suggestions always require your review before anything happens — see Inbox to approve, edit, or dismiss them.
+        </div>
+      </div>
+      ` : ''}
+
+      <div class="feedback-row">
+        <span style="color: var(--text-secondary); font-size: 0.85rem; align-self: center;">Was this correct?</span>
+        <button class="feedback-btn" onclick="sendFeedback(${data.message_id}, 'correct', this)">👍 Correct</button>
+        <button class="feedback-btn" onclick="sendFeedback(${data.message_id}, 'wrong', this)">👎 Wrong</button>
+      </div>
+      <div id="feedbackStatus" style="margin-top: 8px; font-size: 0.8rem; color: var(--text-muted);"></div>
+    </div>
+  `;
+}
+
+async function sendFeedback(messageId, feedback, btn) {
+  const row = btn.parentElement;
+  [...row.querySelectorAll('.feedback-btn')].forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message_id: messageId, feedback: feedback })
+    });
+    const status = document.getElementById('feedbackStatus');
+    if (res.ok) {
+      status.textContent = 'Thanks — feedback saved.';
+    } else {
+      status.textContent = 'Could not save feedback.';
+    }
+  } catch (err) {
+    document.getElementById('feedbackStatus').textContent = 'Could not save feedback.';
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+{% endblock %}
